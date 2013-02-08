@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>P.U.K.I Web Interface v1.0.0.0</title>
+		<link rel="stylesheet" href="style/simple.css" type="text/css">
+		<link rel="stylesheet" href="style/scrollbar.css" type="text/css">
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript">
+		// Configuration
+		var host = "127.12.34.129";
+		var port = "80";
+		
+		
+		
+		// WebSocket connection object
+		var ws;
+
+		function init() {
+			// Connect to Web Socket
+			ws = new WebSocket("ws://" + host + ":" + port + "/");
+
+			// Set event handlers.
+			ws.onopen = function() {
+				output("onopen");
+			};
+			ws.onclose = function() {
+				output("onclose");
+			};
+			ws.onmessage = function(e) {
+				process(e.data);
+			};
+		}
+
+		function output(str) {
+		  alert(str);
+		}
+
+		// What to do when receiving a message from the server
+		function process(str) {
+			$('#chat').prepend($('<p class="triangle-right left">' + str + '</p>').fadeIn('slow'));
+			droid.ttsSpeak(str);
+			
+		}
+
+		$(document).ready(function() {
+			init();
+
+			$('#submit').click(function(e) {
+				e.preventDefault();
+				var text = $('#search').attr('value');
+				ws.send(text);
+				$('#search').attr('value', '');
+				$('#chat').prepend($('<p class="triangle-right right">' + text + '</p>').fadeIn('slow'));
+				
+			});
+		});
+
+        </script>
+    </head>
+    <body>
+		<form class="form-wrapper">
+			<input type="text" id="search" placeholder="Type something ..." required>
+			<input type="submit" value="go" id="submit">
+		</form>
+        
+		<section>
+			<div id="chat"></div> 
+		</section>
+    </body>	
+</html>
